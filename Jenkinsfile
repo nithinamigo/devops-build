@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USR = credentials('dockerhub').username
-        DOCKERHUB_PSW = credentials('dockerhub').password
+        DOCKERHUB = credentials('dockerhub')
         IMAGE_DEV = "nickchinnas/devops-build"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'dev', url: 'https://github.com/nithinamigo/devops-build.git'
