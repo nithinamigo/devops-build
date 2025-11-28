@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB = credentials('dockerhub')
         IMAGE_DEV = "nickchinnas/devops-build"
     }
 
@@ -22,7 +21,11 @@ pipeline {
 
         stage('Login to DockerHub') {
             steps {
-                sh 'echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    """
+                }
             }
         }
 
@@ -34,9 +37,11 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
+                sh 'chmod +x deploy.sh'
                 sh './deploy.sh'
             }
         }
     }
 }
-
+            
+              
